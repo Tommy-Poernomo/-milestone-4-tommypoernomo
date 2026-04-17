@@ -4,14 +4,43 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL") // Kembalikan baris ini
+
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
   password  String
   name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  role      Role      @default(CUSTOMER)
+  accounts  Account[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Account {
+  id           Int           @id @default(autoincrement())
+  accountNumber String        @unique
+  balance      Float         @default(0)
+  userId       Int
+  user         User          @relation(fields: [userId], references: [id])
+  transactions Transaction[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Transaction {
+  id              Int      @id @default(autoincrement())
+  amount          Float
+  type            String   // DEPOSIT, WITHDRAW, TRANSFER
+  fromAccountId   Int?
+  toAccountId     Int?
+  accountId       Int
+  account         Account  @relation(fields: [accountId], references: [id])
+  createdAt       DateTime @default(now())
 }
