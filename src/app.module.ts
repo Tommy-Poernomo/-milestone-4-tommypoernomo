@@ -1,16 +1,17 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { UsersModule } from './resources/users/users.module';
+import { Global, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { PrismaService } from './prisma.service';
 import { AuthModule } from './resources/auth/auth.module';
+import { UsersModule } from './resources/users/users.module';
 
+@Global() // Membuat PrismaService bisa dipakai di mana saja
 @Module({
   imports: [
-    // tempat mendaftarkan modul di sini
-    UsersModule,
+    ConfigModule.forRoot({ isGlobal: true }),// Ini wajib agar ConfigService jalan
     AuthModule,
+    UsersModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [PrismaService],
+  exports: [PrismaService],
 })
 export class AppModule {}

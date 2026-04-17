@@ -1,45 +1,17 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
-  //provider = "prisma-client"
   provider = "prisma-client-js"
-  //output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL") // Kembalikan baris ini
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
   password  String
-  name      String?
-  role      String    @default("customer") // Untuk membedakan Admin dan Customer
-  accounts  Account[]
-  createdAt DateTime  @default(now())
-}
-
-model Account {
-  id            Int           @id @default(autoincrement())
-  accountNumber String        @unique
-  balance       Decimal       @default(0) // Gunakan Decimal untuk uang agar presisi
-  userId        Int
-  user          User          @relation(fields: [userId], references: [id])
-  transactions  Transaction[]
-  createdAt     DateTime      @default(now())
-}
-
-model Transaction {
-  id              Int      @id @default(autoincrement())
-  amount          Decimal
-  type            String   // DEPOSIT, WITHDRAW, TRANSFER
-  fromAccountId   Int?     // Opsional jika deposit
-  toAccountId     Int?     // Opsional jika withdraw
-  account         Account  @relation(fields: [accountId], references: [id])
-  accountId       Int
-  createdAt       DateTime @default(now())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
