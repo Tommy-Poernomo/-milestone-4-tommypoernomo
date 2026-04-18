@@ -31,4 +31,31 @@ export class TransactionsService {
       include: { account: true },
     });
   }
+
+  async withdraw(dto: CreateTransactionDto) {
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Cek saldo dengan pengecekan aman
+      const account = await tx.account.findUnique({ where: { id: dto.accountId } });
+      
+      // Jika akun tidak ditemukan atau saldo kurang
+      if (!account || account.balance < dto.amount) {
+        throw new BadRequestException('Akun tidak ditemukan atau saldo tidak mencukupi');
+      }
+
+      // 2. Kurangi saldo
+      await tx.account.update({
+        where: { id: dto.accountId },
+        data: { balance: { decrement: dto.amount } },
+      });
+
+      // 3. Catat transaksi
+      return tx.transaction.create({
+        data: {
+          amount: dto.amount,
+          type: 'WITHDRAW',
+          accountId: dto.accountId,
+        },
+      });
+    });
+  }
 }

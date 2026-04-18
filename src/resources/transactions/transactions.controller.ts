@@ -20,4 +20,9 @@ export class TransactionsController {
   findAll(@Request() req) {
     return this.transactionsService.findAll(req.user.userId);
   }
+
+  @Post('withdraw')
+  withdraw(@Body() dto: CreateTransactionDto) {
+    return this.transactionsService.withdraw(dto);
+  }
 }
