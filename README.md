@@ -21,45 +21,50 @@ RevoBank API adalah sebuah sistem backend perbankan fiktif yang dikembangkan men
 
 ## 🌐 Dokumentasi API (Swagger)
 Dokumentasi interaktif dapat diakses melalui link berikut:
-**[Klik di sini untuk Dokumentasi API](https://URL_RAILWAY_BAPAK/api/docs)**
+**[Klik di sini untuk Dokumentasi API](https://milestone-4-tommypoernomo-production.up.railway.app/api/docs)**
 
 ## ⚙️ Cara Menjalankan Proyek Secara Lokal
 
 1. **Clone repositori ini:**
    ```bash
-   git clone [https://github.com/Tommy-Poernomo/-milestone-4-tommypoernomo.git](https://github.com/Tommy-Poernomo/-milestone-4-tommypoernomo.git)
+   git clone https://github.com/Tommy-Poernomo/-milestone-4-tommypoernomo.git
+   ```
 
 2. **Install dependencies:**
   ```bash
    npm install
+   ```
 
 3. **Konfigurasi variabel lingkungan (.env):**
   ```bash
    DATABASE_URL="postgresql://user:password@host:port/database"
    JWT_SECRET="rahasia_revobank_tommy"
    PORT=3000
+   ```
 
 4. **Jalankan migrasi Prisma:**
   ```bash
    npx prisma generate
    npx prisma db push
+   ```
 
 5. **Jalankan aplikasi:**
   ```bash
    npm run start:dev
+   ```
 
-📈 Endpoint Utama
+## 📈 Endpoint Utama
 
-    POST /auth/register : Registrasi nasabah baru.
+- `POST /auth/register` : Registrasi nasabah baru.
 
-    POST /auth/login : Login untuk mendapatkan token JWT.
+- `POST /auth/login` : Login untuk mendapatkan token JWT.
 
-    POST /accounts : Membuat akun bank baru.
+- `POST /accounts` : Membuat akun bank baru.
 
-    POST /transactions/deposit : Menambah saldo ke akun.
+- `POST /transactions/deposit` : Menambah saldo ke akun.
 
-    POST /transactions/withdraw : Menarik saldo dari akun.
+- `POST /transactions/withdraw` : Menarik saldo dari akun.
 
-    POST /transactions/transfer : Mengirim dana ke nasabah lain.
+- `POST /transactions/transfer` : Mengirim dana ke nasabah lain.
 
 Proyek ini dikembangkan sebagai bagian dari Milestone 4 RevoU Backend Development.
