@@ -21,4 +21,19 @@ export class AccountsService {
       where: { userId },
     });
   }
+
+  async findOne(id: number, userId: number) {
+    return this.prisma.account.findFirst({ where: { id, userId } });
+  }
+
+  async update(id: number, userId: number, dto: CreateAccountDto) {
+    return this.prisma.account.updateMany({
+      where: { id, userId },
+      data: { accountNumber: dto.accountNumber },
+    });
+  }
+
+  async remove(id: number, userId: number) {
+    return this.prisma.account.deleteMany({ where: { id, userId } });
+  }
 }

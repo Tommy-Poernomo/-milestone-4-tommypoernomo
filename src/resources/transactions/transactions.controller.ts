@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Post, Get, Body, UseGuards, Request, Param } from '@nestjs/common';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -24,5 +24,15 @@ export class TransactionsController {
   @Post('withdraw')
   withdraw(@Body() dto: CreateTransactionDto) {
     return this.transactionsService.withdraw(dto);
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string, @Request() req) {
+    return this.transactionsService.findOne(+id, req.user.userId);
+  }
+
+  @Post('transfer')
+  transfer(@Body() dto: CreateTransactionDto, @Request() req) {
+    return this.transactionsService.transfer(dto, req.user.userId);
   }
 }

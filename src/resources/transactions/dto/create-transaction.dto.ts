@@ -7,9 +7,10 @@ export class CreateTransactionDto {
 
   @IsNumber()
   @IsNotEmpty()
-  accountId: number;
+  accountId: number; // Akun pengirim
 
   @IsString()
   @IsOptional()
   toAccountNumber?: string; // Khusus untuk transfer
+  toAccountId?: number; // Akun penerima
 }
