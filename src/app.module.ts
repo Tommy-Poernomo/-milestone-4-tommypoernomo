@@ -9,7 +9,7 @@ import { TransactionsModule } from './resources/transactions/transactions.module
 @Global() // Membuat PrismaService bisa dipakai di mana saja
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),// Ini wajib agar ConfigService jalan
+    ConfigModule.forRoot({ isGlobal: true }),// Ini wajib agar ConfigService jalan Sangat penting: membuat env bisa diakses di seluruh app
     AuthModule,
     UsersModule,
     AccountsModule,

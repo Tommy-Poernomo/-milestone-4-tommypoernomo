@@ -1,7 +1,7 @@
 import { Controller, Post, Get, Body, UseGuards, Request, Patch } from '@nestjs/common'; // Tambahkan Patch
 import { AuthService } from './auth.service';
-import { RegisterDto } from '../accounts/dto/register.dto';
-import { LoginDto } from '../accounts/dto/login.dto';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 import { JwtAuthGuard } from './guards/jwt-auth.guard'; 
 import { UpdateUserDto } from './dto/update-user.dto'; // Tambahkan impor DTO
 

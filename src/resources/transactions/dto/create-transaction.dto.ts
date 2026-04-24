@@ -3,11 +3,11 @@ import { IsNotEmpty, IsNumber, IsString, IsOptional } from 'class-validator';
 export class CreateTransactionDto {
   @IsNumber()
   @IsNotEmpty()
-  amount: number;
+  amount!: number;
 
   @IsNumber()
   @IsNotEmpty()
-  accountId: number; // Akun pengirim
+  accountId!: number; // Akun pengirim
 
   @IsString()
   @IsOptional()

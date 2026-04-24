@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UsersRepository } from '../users/users.repository';
-import { RegisterDto } from '../accounts/dto/register.dto';
-import { LoginDto } from '../accounts/dto/login.dto'; // Tambah ini
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto'; // Tambah ini
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt'; // Tambah ini
 import { PrismaService } from '../../prisma.service'; // Sesuaikan path-nya
