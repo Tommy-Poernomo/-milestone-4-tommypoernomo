@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from '../users/users.repository';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto'; // Tambah ini
@@ -44,10 +44,20 @@ export class AuthService {
   }
 
     async updateProfile(userId: number, updateDto: UpdateUserDto) {
-    return this.prisma.user.update({
-      where: { id: userId },
-      data: updateDto,
-      select: { id: true, email: true, name: true },// Jangan kembalikan password
-    });
+    // return this.prisma.user.update({
+    //   where: { id: userId },
+    //   data: updateDto,
+    //   select: { id: true, email: true, name: true },// Jangan kembalikan password
+    // });
+    try {
+      return await this.prisma.user.update({
+        where: { id: userId },
+        data: updateDto,
+        select: { id: true, email: true, name: true },
+      });
+    } catch (error) {
+      // Jika Prisma gagal update (misal ID tidak ditemukan), beri respons 404
+      throw new NotFoundException('User tidak ditemukan');
+    }
   }
 }

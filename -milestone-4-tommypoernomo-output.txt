@@ -5,7 +5,7 @@ PROJECT EXPORT FOR LLMs
 PROJECT INFORMATION:
 --------------------------------------------------
 Project Name: -milestone-4-tommypoernomo
-Generated On: 2026-04-24 14:21:37 (Asia/Singapore / GMT+08:00)
+Generated On: 2026-04-25 06:02:49 (Asia/Singapore / GMT+08:00)
 Total Files Processed: 41
 Export Tool: Easy Whole Project to Single Text File for LLMs v1.1.0
 Tool Author: Jota / José Guilherme Pandolfi
@@ -31,7 +31,7 @@ PROJECT STRUCTURE
 │   │   │   │   └── 📄 create-account.dto.ts (225 B)
 │   │   │   ├── 📄 accounts.controller.ts (2.15 KB)
 │   │   │   ├── 📄 accounts.module.ts (337 B)
-│   │   │   └── 📄 accounts.service.ts (1.06 KB)
+│   │   │   └── 📄 accounts.service.ts (1.83 KB)
 │   │   ├── 📁 auth/
 │   │   │   ├── 📁 dto/
 │   │   │   │   ├── 📄 login.dto.ts (211 B)
@@ -43,7 +43,7 @@ PROJECT STRUCTURE
 │   │   │   ├── 📄 auth.controller.ts (1.1 KB)
 │   │   │   ├── 📄 auth.module.ts (827 B)
 │   │   │   ├── 📄 auth.service.spec.ts (1.33 KB)
-│   │   │   ├── 📄 auth.service.ts (1.84 KB)
+│   │   │   ├── 📄 auth.service.ts (2.22 KB)
 │   │   │   └── 📄 jwt.strategy.ts (550 B)
 │   │   ├── 📁 transactions/
 │   │   │   ├── 📁 dto/
@@ -261,20 +261,20 @@ FILE: src/resources/accounts/accounts.service.ts
 
 FILE INFORMATION:
 ----------------------------------------
-Size: 1.06 KB
+Size: 1.83 KB
 Extension: .ts
 Language: typescript
 Location: src/resources/accounts/accounts.service.ts
 Relative Path: src/resources/accounts
 Created: 2026-04-17 16:02:52 (Asia/Singapore / GMT+08:00)
-Modified: 2026-04-18 02:38:53 (Asia/Singapore / GMT+08:00)
-MD5: 4b4a9920b4421b37e789d9b7d8806eb7
-SHA256: 8f22e9a03ecec45488db55c1958816c85d73607ddcc115dd5fd7dac02ed5496d
+Modified: 2026-04-25 06:01:06 (Asia/Singapore / GMT+08:00)
+MD5: cbdec14867ef3a9d4aadceaad230f71f
+SHA256: 4022b44256145f80ed1dc6d63b4a511cf2ddc4ef96d11d15946e906185e08c46
 Encoding: ASCII
 
 FILE CONTENT:
 ----------------------------------------
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../../prisma.service';
 import { CreateAccountDto } from './dto/create-account.dto';
 
@@ -299,18 +299,40 @@ export class AccountsService {
   }
 
   async findOne(id: number, userId: number) {
-    return this.prisma.account.findFirst({ where: { id, userId } });
+    // return this.prisma.account.findFirst({ where: { id, userId } });
+    const account = await this.prisma.account.findFirst({ where: { id, userId } });
+    
+    // Tambahkan Exception agar klien dapat respons 404
+    if (!account) {
+      throw new NotFoundException(`Akun dengan ID ${id} tidak ditemukan`);
+    }
+    return account;
   }
 
+  
+
   async update(id: number, userId: number, dto: CreateAccountDto) {
-    return this.prisma.account.updateMany({
-      where: { id, userId },
+    // return this.prisma.account.updateMany({
+    //   where: { id, userId },
+    //   data: { accountNumber: dto.accountNumber },
+    // });
+    // Cek dulu apakah akun ada & milik user
+    const account = await this.findOne(id, userId); // Panggil findOne yang baru saja kita perbaiki
+    
+    return this.prisma.account.update({
+      where: { id: account.id },
       data: { accountNumber: dto.accountNumber },
     });
   }
 
   async remove(id: number, userId: number) {
-    return this.prisma.account.deleteMany({ where: { id, userId } });
+    // return this.prisma.account.deleteMany({ where: { id, userId } });
+    // Cek dulu apakah ada
+    await this.findOne(id, userId);
+    
+    return this.prisma.account.delete({ 
+      where: { id } 
+    });
   }
 }
 ================================================================================
@@ -619,20 +641,20 @@ FILE: src/resources/auth/auth.service.ts
 
 FILE INFORMATION:
 ----------------------------------------
-Size: 1.84 KB
+Size: 2.22 KB
 Extension: .ts
 Language: typescript
 Location: src/resources/auth/auth.service.ts
 Relative Path: src/resources/auth
 Created: 2026-04-17 14:47:07 (Asia/Singapore / GMT+08:00)
-Modified: 2026-04-24 01:39:49 (Asia/Singapore / GMT+08:00)
-MD5: 8712f8d39c8b2addce18aaf42d22c21b
-SHA256: ff7bc762c4a1277ef1a9597f6c72e9edf6721bb8f3b6ac3c4779cde5f1de30da
+Modified: 2026-04-25 06:02:48 (Asia/Singapore / GMT+08:00)
+MD5: 877d04e99298264814ba7508321c47f5
+SHA256: cbd3f7cbb9cc90d60891ac72af08fa64e9f1ab4ecee911ace4a06423bee7ab04
 Encoding: ASCII
 
 FILE CONTENT:
 ----------------------------------------
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { UsersRepository } from '../users/users.repository';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto'; // Tambah ini
@@ -678,11 +700,21 @@ export class AuthService {
   }
 
     async updateProfile(userId: number, updateDto: UpdateUserDto) {
-    return this.prisma.user.update({
-      where: { id: userId },
-      data: updateDto,
-      select: { id: true, email: true, name: true },// Jangan kembalikan password
-    });
+    // return this.prisma.user.update({
+    //   where: { id: userId },
+    //   data: updateDto,
+    //   select: { id: true, email: true, name: true },// Jangan kembalikan password
+    // });
+    try {
+      return await this.prisma.user.update({
+        where: { id: userId },
+        data: updateDto,
+        select: { id: true, email: true, name: true },
+      });
+    } catch (error) {
+      // Jika Prisma gagal update (misal ID tidak ditemukan), beri respons 404
+      throw new NotFoundException('User tidak ditemukan');
+    }
   }
 }
 ================================================================================
